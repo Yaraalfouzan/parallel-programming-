@@ -6,17 +6,19 @@
 // Function to generate random vector
 void generate_vector(double *vec, int n) {
     for (int i = 0; i < n; i++) {
-        vec[i] = rand() % 100; // Random values between 0 and 99
+        vec[i] = rand() % 1000; // Random values
     }
 }
 
 int main(int argc, char *argv[]) {
+
     if (argc != 2) {
-        printf("Usage: %s <vector_size>\n", argv[0]);
+        printf("%s enter exactly one vector length \n", argv[0]);
         return 1;
     }
-
+// take the command-line argument provided when you run the program into the atoi function atoi stands for "ASCII to Integer"
     int n = atoi(argv[1]);
+
     double *a = (double *)malloc(n * sizeof(double));
     double *b = (double *)malloc(n * sizeof(double));
 
@@ -26,6 +28,7 @@ int main(int argc, char *argv[]) {
     double start_time, end_time;
     double euclidean_distance = 0.0;
 
+//the openmp part 
     start_time = omp_get_wtime();
 
     #pragma omp parallel for reduction(+:euclidean_distance)
@@ -37,6 +40,7 @@ int main(int argc, char *argv[]) {
     euclidean_distance = sqrt(euclidean_distance);
 
     end_time = omp_get_wtime();
+//end part
 
     printf("Euclidean Distance: %f\n", euclidean_distance);
     printf("Time taken: %f seconds\n", end_time - start_time);
