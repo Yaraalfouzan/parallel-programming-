@@ -47,18 +47,7 @@ int main(int argc, char *argv[]) {
     // Calculate the time in seconds
     double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
 
-    // Print vectors and distance
-    printf("Vector a: ");
-    for (int i = 0; i < n; i++) {
-        printf("%d ", a[i]);
-    }
-    printf("\n");
-
-    printf("Vector b: ");
-    for (int i = 0; i < n; i++) {
-        printf("%d ", b[i]);
-    }
-    printf("\n");
+    // Print euclidean distance
 
     printf("Euclidean Distance: %.2f\n", distance);
     printf("Time taken: %.5f seconds\n", time_taken);
