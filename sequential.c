@@ -24,20 +24,29 @@ int main(int argc, char *argv[]) {
         printf("Vector length should be a positive integer.\n");
         return 1;
     }
-    int a[n], b[n];
+    
+     // Allocate memory for the vectors
+    int *a = (int *)malloc(n * sizeof(int));
+    int *b = (int *)malloc(n * sizeof(int));
+
+    // Check if memory allocation was successful
+    if (a == NULL || b == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
 
     // Seed for random number generation
     srand(time(0));
 
-    // Start timer for sequential 
-    clock_t start = clock();
     
     // Generate random values for both vectors
     for (int i = 0; i < n; i++) {
         a[i] = rand() %1000;
         b[i] = rand() %1000;
     }
-
+    // Start timer for sequential 
+    clock_t start = clock();
+    
     // Calculate Euclidean distance
     double distance = calculate_euclidean_distance(a, b, n);
 
