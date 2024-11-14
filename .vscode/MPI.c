@@ -66,7 +66,7 @@ void calculate_euclidean_distance(int n, int rank, int size, double *average_tim
 }
 
 int main(int argc, char **argv) {
-    int rank, size, n = 590; // Vector size
+    int rank, size, n = 100000; // Vector size
     double average_time = 0.0;
 
     // Initialize MPI
