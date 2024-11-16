@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
         a[i] = rand() %1000;
         b[i] = rand() %1000;
     }
+     for (int i = 0; i < num_runs; i++) {
     // Start timer for sequential 
     clock_t start = clock();
     
