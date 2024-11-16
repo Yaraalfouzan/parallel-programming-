@@ -10,26 +10,9 @@ void generate_vector(double *vec, int n) {
     }
 }
 
-int main(int argc, char *argv[]) {
-
-    if (argc != 2) {
-        printf("%s enter exactly one vector length \n", argv[0]);
-        return 1;
-    }
-// take the command-line argument provided when you run the program into the atoi function atoi stands for "ASCII to Integer"
-    int n = atoi(argv[1]);
-
-    double *a = (double *)malloc(n * sizeof(double));
-    double *b = (double *)malloc(n * sizeof(double));
-
-    generate_vector(a, n);
-    generate_vector(b, n);
-
-    double start_time, end_time;
+// Function to calculate Euclidean distance
+double calculate_euclidean_distance(double *a, double *b, int n) {
     double euclidean_distance = 0.0;
-
-//the openmp part 
-    start_time = omp_get_wtime();
 
     #pragma omp parallel for reduction(+:euclidean_distance)
     for (int i = 0; i < n; i++) {
@@ -37,13 +20,43 @@ int main(int argc, char *argv[]) {
         euclidean_distance += diff * diff;
     }
 
-    euclidean_distance = sqrt(euclidean_distance);
+    return sqrt(euclidean_distance);
+}
 
-    end_time = omp_get_wtime();
-//end part
+int main(int argc, char **argv) {
+    int n = 150000;           // Default vector size
+    double total_time = 0.0;  // Total execution time for all runs
+    int num_runs = 10;        // Number of iterations
 
-    printf("Euclidean Distance: %f\n", euclidean_distance);
-    printf("Time taken: %f seconds\n", end_time - start_time);
+    if (argc == 2) {
+        n = atoi(argv[1]); // If vector size is provided via command line
+    }
+
+    double *a = (double *)malloc(n * sizeof(double));
+    double *b = (double *)malloc(n * sizeof(double));
+
+    generate_vector(a, n);
+    generate_vector(b, n);
+
+    for (int i = 0; i < num_runs; i++) {
+        // Start timing
+        double start_time = omp_get_wtime();
+
+        // Perform Euclidean distance calculation
+        double euclidean_distance = calculate_euclidean_distance(a, b, n);
+
+        // End timing
+        double end_time = omp_get_wtime();
+
+        total_time += (end_time - start_time);
+
+        // Output for each run (optional)
+        printf("Run %d: Euclidean Distance = %f, Time = %f seconds\n", i + 1, euclidean_distance, end_time - start_time);
+    }
+
+    // Compute and print the average execution time
+    double average_execution_time = total_time / num_runs;
+    printf("Average Execution Time over %d runs: %f seconds\n", num_runs, average_execution_time);
 
     free(a);
     free(b);
