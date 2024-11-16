@@ -67,12 +67,6 @@ int main(int argc, char *argv[]) {
     free(a);
     free(b);
     
-    // Print euclidean distance
-
-    printf("Euclidean Distance: %.2f\n", distance);
- 
-
-
-
+    
     return 0;
 }
