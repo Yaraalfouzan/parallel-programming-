@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
         total_time += (end_time - start_time);
 
         // Output for each run (optional)
-        printf("Run %d: Euclidean Distance = %f, Time = %f seconds\n", i + 1, euclidean_distance, end_time - start_time);
+        printf("Run %d: Time = %f seconds\n", i + 1, end_time - start_time);
     }
 
     // Compute and print the average execution time
