@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     // Calculate the time in seconds
     double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
      // Output for each run (optional)
-        printf("Run %d: Time = %f seconds\n", i + 1, end_time - start_time);
+        printf("Run %d: Time = %f seconds\n", i + 1, end - start);
     }
 
     // Compute and print the average execution time
