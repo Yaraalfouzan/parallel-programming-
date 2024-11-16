@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
         printf("Vector length should be a positive integer.\n");
         return 1;
     }
+    int num_runs=10;
+     for (int i = 0; i < num_runs; i++) {
     
      // Allocate memory for the vectors
     int *a = (int *)malloc(n * sizeof(int));
@@ -45,8 +47,6 @@ int main(int argc, char *argv[]) {
         b[i] = rand() %1000;
     }
 
-    int num_runs=10;
-     for (int i = 0; i < num_runs; i++) {
     // Start timer for sequential 
     clock_t start = clock();
     
