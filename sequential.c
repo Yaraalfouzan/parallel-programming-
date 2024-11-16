@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     int num_runs=10;
+    double total_time = 0.0;  // Total execution time for all runs
      for (int i = 0; i < num_runs; i++) {
     
      // Allocate memory for the vectors
@@ -58,17 +59,18 @@ int main(int argc, char *argv[]) {
 
     // Calculate the time in seconds
     double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+    total_time += (end - start);
      // Output for each run (optional)
         printf("Run %d: Time = %f seconds\n", i + 1, end - start);
+
+    free(a);
+    free(b);
+    
     }
 
     // Compute and print the average execution time
     double average_execution_time = total_time / num_runs;
     printf("Average Execution Time over %d runs: %f seconds\n", num_runs, average_execution_time);
 
-    free(a);
-    free(b);
-    
-    
     return 0;
 }
