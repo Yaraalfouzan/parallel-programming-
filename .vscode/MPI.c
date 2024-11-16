@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-void calculate_euclidean_distance(int n, int rank, int size) {
+void calculate_euclidean_distance(int n, int rank, int size, int runNum) {
     double *a = NULL, *b = NULL; // Full vectors (only in root process)
     double local_sum = 0.0, global_sum = 0.0; // Partial and total sums
     int local_n = n / size; // Number of elements per process
@@ -38,7 +38,7 @@ void calculate_euclidean_distance(int n, int rank, int size) {
     // Root process calculates and prints the Euclidean distance
     if (rank == 0) {
         double euclidean_distance = sqrt(global_sum);
-        printf("Final result: %f\n", euclidean_distance);
+        printf("Run %d - Final result: %.3f\n",runNum , euclidean_distance);
 
         // Free the full vectors
         free(a);
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
         double start_time = MPI_Wtime();
 
         // Perform Euclidean distance calculation
-        calculate_euclidean_distance(n, rank, size);
+        calculate_euclidean_distance(n, rank, size, i+1);
 
         // End timing
         double end_time = MPI_Wtime();
