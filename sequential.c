@@ -56,11 +56,21 @@ int main(int argc, char *argv[]) {
 
     // Calculate the time in seconds
     double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+     // Output for each run (optional)
+        printf("Run %d: Time = %f seconds\n", i + 1, end_time - start_time);
+    }
 
+    // Compute and print the average execution time
+    double average_execution_time = total_time / num_runs;
+    printf("Average Execution Time over %d runs: %f seconds\n", num_runs, average_execution_time);
+
+    free(a);
+    free(b);
+    
     // Print euclidean distance
 
     printf("Euclidean Distance: %.2f\n", distance);
-    printf("Time taken: %.5f seconds\n", time_taken);
+ 
 
 
 
