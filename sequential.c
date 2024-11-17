@@ -24,6 +24,9 @@ int main(int argc, char *argv[]) {
         printf("Vector length should be a positive integer.\n");
         return 1;
     }
+    int num_runs=10;
+    double total_time = 0.0;  // Total execution time for all runs
+     for (int i = 0; i < num_runs; i++) {
     
      // Allocate memory for the vectors
     int *a = (int *)malloc(n * sizeof(int));
@@ -45,8 +48,6 @@ int main(int argc, char *argv[]) {
         b[i] = rand() %1000;
     }
 
-    int num_runs=10;
-     for (int i = 0; i < num_runs; i++) {
     // Start timer for sequential 
     clock_t start = clock();
     
@@ -58,17 +59,19 @@ int main(int argc, char *argv[]) {
 
     // Calculate the time in seconds
     double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+
+     total_time += time_taken;
      // Output for each run (optional)
-        printf("Run %d: Time = %f seconds\n", i + 1, end_time - start_time);
+        printf("Run %d: Time = %f seconds\n", i + 1,time_taken );
+
+    free(a);
+    free(b);
+    
     }
 
     // Compute and print the average execution time
     double average_execution_time = total_time / num_runs;
     printf("Average Execution Time over %d runs: %f seconds\n", num_runs, average_execution_time);
 
-    free(a);
-    free(b);
-    
-    
     return 0;
 }

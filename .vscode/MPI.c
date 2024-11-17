@@ -2,87 +2,90 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
-void calculate_euclidean_distance(int n, int rank, int size) {
-    double *a = NULL, *b = NULL; // Full vectors (only in root process)
-    double local_sum = 0.0, global_sum = 0.0; // Partial and total sums
-    int local_n = n / size; // Number of elements per process
-
-    // Allocate memory for local chunks
-    double *a_local = malloc(local_n * sizeof(double));
-    double *b_local = malloc(local_n * sizeof(double));
-
-    // Root process generates random vectors and scatters them
-    if (rank == 0) {
-        a = malloc(n * sizeof(double));
-        b = malloc(n * sizeof(double));
-
-        for (int i = 0; i < n; i++) {
-            a[i] = rand() % 100;
-            b[i] = rand() % 100;
-        }
-    }
-
-    // Scatter the vectors to all processes
-    MPI_Scatter(a, local_n, MPI_DOUBLE, a_local, local_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Scatter(b, local_n, MPI_DOUBLE, b_local, local_n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-    // Compute local sum of squared differences
-    for (int i = 0; i < local_n; i++) {
-        local_sum += pow(a_local[i] - b_local[i], 2);
-    }
-
-    // Reduce local sums to calculate the global sum at root process
-    MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    // Root process calculates and prints the Euclidean distance
-    if (rank == 0) {
-        double euclidean_distance = sqrt(global_sum);
-        printf("Final result: %f\n", euclidean_distance);
-
-        // Free the full vectors
-        free(a);
-        free(b);
-    }
-
-    // Free local memory
-    free(a_local);
-    free(b_local);
-}
-
-int main(int argc, char **argv) {
-    int rank, size, n = 1500000; // Vector size
-    double total_time = 0.0; // Total execution time for all runs
-    int num_runs = 10;       // Number of iterations
-
-    // Initialize MPI
+int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank); // Get process rank
-    MPI_Comm_size(MPI_COMM_WORLD, &size); // Get total number of processes
 
-    for (int i = 0; i < num_runs; i++) {
-        // Start timing
-        double start_time = MPI_Wtime();
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-        // Perform Euclidean distance calculation
-        calculate_euclidean_distance(n, rank, size);
+    int n = 150000; //vector size
 
-        // End timing
-        double end_time = MPI_Wtime();
+    double total_execution_time = 0.0;
+    double total_distance = 0.0;
 
-        // Accumulate elapsed time for this run (only on the root process)
+    for (int run = 1; run <= 10; run++) {
+        double *vector1 = NULL, *vector2 = NULL;
+        double start_time, end_time;
+
         if (rank == 0) {
-            total_time += (end_time - start_time);
+            //memory allocation & generating random vectors on root process
+            vector1 = (double*) malloc(n * sizeof(double));
+            vector2 = (double*) malloc(n * sizeof(double));
+
+            srand(time(NULL) + run); //change seed for each run
+            for (int i = 0; i < n; i++) {
+                vector1[i] = rand() % 1000;
+                vector2[i] = rand() % 1000;
+            }
+        }
+
+        //broadcast vectors to all processes
+        double* local_vector1 = (double*) malloc((n / size) * sizeof(double));
+        double* local_vector2 = (double*) malloc((n / size) * sizeof(double));
+
+        MPI_Scatter(vector1, n / size, MPI_DOUBLE, local_vector1, n / size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Scatter(vector2, n / size, MPI_DOUBLE, local_vector2, n / size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+        //start time
+        MPI_Barrier(MPI_COMM_WORLD);
+        start_time = MPI_Wtime();
+
+        //local sum of squared differences
+        double local_sum = 0.0;
+        int local_size = n / size;
+
+        for (int i = 0; i < local_size; i++) {
+            double diff = local_vector1[i] - local_vector2[i];
+            local_sum += diff * diff;
+        }
+
+        // all local sums and final result
+        double global_sum = 0.0;
+        MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+        //stop time
+        MPI_Barrier(MPI_COMM_WORLD);
+        end_time = MPI_Wtime();
+
+        if (rank == 0) {
+            double execution_time = end_time - start_time;
+            double distance = sqrt(global_sum);
+
+            printf("Run %d: Execution Time = %f sec, Distance = %.2f\n", run, execution_time, distance);
+
+            //totals
+            total_execution_time += execution_time;
+            total_distance += distance;
+        }
+
+        free(local_vector1);
+        free(local_vector2);
+        if (rank == 0) {
+            free(vector1);
+            free(vector2);
         }
     }
 
-    // Compute and print the average execution time on the root process
     if (rank == 0) {
-        double average_execution_time = total_time / num_runs;
-        printf("Average Execution Time over %d runs: %f seconds\n", num_runs, average_execution_time);
+        double average_execution_time = total_execution_time / 10;
+        double average_distance = total_distance / 10;
+        printf("\nAverage Execution Time = %f seconds\n", average_execution_time);
+        printf("Average Distance = %.3f\n", average_distance);
     }
 
-    // Finalize MPI
     MPI_Finalize();
     return 0;
 }
