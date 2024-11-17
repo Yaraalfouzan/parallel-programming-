@@ -38,10 +38,12 @@ int main(int argc, char **argv) {
     
 
     for (int i = 0; i < num_runs; i++) {
-        // Start timing
-        double start_time = omp_get_wtime();
+        
+        
         generate_vector(a, n);
         generate_vector(b, n);
+        // Start timing
+        double start_time = omp_get_wtime();
 
         // Perform Euclidean distance calculation
         double euclidean_distance = calculate_euclidean_distance(a, b, n);
