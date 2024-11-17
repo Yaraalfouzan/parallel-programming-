@@ -35,12 +35,13 @@ int main(int argc, char **argv) {
     double *a = (double *)malloc(n * sizeof(double));
     double *b = (double *)malloc(n * sizeof(double));
 
-    generate_vector(a, n);
-    generate_vector(b, n);
+    
 
     for (int i = 0; i < num_runs; i++) {
         // Start timing
         double start_time = omp_get_wtime();
+        generate_vector(a, n);
+        generate_vector(b, n);
 
         // Perform Euclidean distance calculation
         double euclidean_distance = calculate_euclidean_distance(a, b, n);
